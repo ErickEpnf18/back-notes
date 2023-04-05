@@ -32,6 +32,21 @@ const app = express();
 app.use(cors()) // same origin policy
 app.use(express.json()); // json is (json-parser) for access data from body (useful to post wihtout this don't catch request.body because don't parse to javascript obj and also verified the content-type
 
+// MIDDLEWARES
+
+app.use(express.static('dist'))
+
+const requestLogger = (request, response, next) => {
+  console.log("Method:", request.method);
+  // console.log("Path:  ", request.path);
+  // console.log("Body:  ", request.body);
+  // console.log("---");
+  next();
+  //response.send("<h1>Hello World!</h1>");
+};
+app.use(requestLogger);
+
+// ROUTES 
 const generateId = () =>
   (notes.length > 0 ? Math.max(...notes.map((n) => n.id)) : 0) + 1;
 
@@ -53,11 +68,9 @@ app.post("/api/notes", (request, response) => {
   response.json(note);
 });
 
-
-
-app.get("/", (request, response, next) => {
-  response.send("<h1>Hello World!</h1>");
-});
+// app.get("/", (request, response, next) => {
+//   response.send("<h1>Hello World!</h1>");
+// });
 
 app.get("/api/notes", (request, response) => {
   response.json(notes);
@@ -69,7 +82,6 @@ app.get("/api/notes/:id", (request, response) => {
     // console.log(note.id, typeof note.id, id, typeof id, note.id === id);
     return note.id === id;
   });
-  console.log(id, note);
   if (note) {
     response.json(note);
   } else {
@@ -85,16 +97,7 @@ app.delete("/api/notes/:id", (request, response) => {
 });
 
 
-// middlewares
-const requestLogger = (request, response, next) => {
-  // console.log("Method:", request.method);
-  // console.log("Path:  ", request.path);
-  // console.log("Body:  ", request.body);
-  // console.log("---");
-  next();
-  //response.send("<h1>Hello World!</h1>");
-};
-app.use(requestLogger);
+
 
 
 // PERSONS API
